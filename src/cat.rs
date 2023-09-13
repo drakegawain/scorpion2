@@ -25,6 +25,8 @@ pub fn cat(){
         cache.push_str(chars);
         if cache.len() >= 10 {
             send(cache.clone()); 
+            println!("{}", cache);
+            cache.clear();
             }
         }
     );
