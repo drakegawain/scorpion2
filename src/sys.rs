@@ -1,6 +1,25 @@
+extern crate toml;
+extern crate serde;
+extern crate serde_derive;
+
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
+use serde::Deserialize;
 use chrono::{Local, Datelike};
+
+#[derive(Debug, Deserialize)]
+struct App {
+    default: AppConfig,
+}
+
+
+#[derive(Debug, Deserialize)]
+struct AppConfig {
+
+    adress: String,
+    port: u32,
+    id: String,
+}
 
 pub fn save(url: String) -> std::io::Result<()> {
     let mut file = File::create("url.txt")?;
@@ -65,13 +84,8 @@ pub fn load_route() -> String{
     let mut file = File::open("App.toml").unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
-    
-    let vec: Vec<&str> = content.split_inclusive("adress = ").collect(); 
-    let vec2: Vec<&str> = vec[1].split_inclusive("port = ").collect(); 
-    let vec3: Vec<&str> = vec2[0].split_inclusive("\"").collect(); 
-    let ip = vec3[1].replace("\"","");
-    let port = vec2[1];
-    let route = format!("{}:{}", ip, port);
+    let app_config: App = toml::from_str(&content).unwrap();
+    let route = format!("{}:{}", app_config.default.adress, app_config.default.port);
     return route; 
     
 }
@@ -81,13 +95,8 @@ pub fn get_id() -> String{
     let mut file = File::open("App.toml").unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
-    
-    let vec: Vec<&str> = content.split_inclusive("adress = ").collect(); 
-    let vec2: Vec<&str> = vec[1].split_inclusive("id = ").collect(); 
-    let id = vec2[1];
-    return String::from(id); 
- 
-
+    let app_config: App = toml::from_str(&content).unwrap();
+    return app_config.default.id;
 }
 
 pub fn get_date() -> String{

@@ -86,8 +86,7 @@ pub async fn cli() {
         Some(Commands::Test { url, port, id, date, text, load }) =>{
 
            if *load == true{
-                get_id();
-                get_date();
+               println!("{}", load_route()); 
            }
         }
         Some(Commands::Client{ url, port, id, save, load } ) =>{

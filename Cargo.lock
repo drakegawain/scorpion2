@@ -2218,7 +2218,10 @@ dependencies = [
  "mysql",
  "reqwest",
  "rocket",
+ "serde",
+ "serde_derive",
  "tokio",
+ "toml 0.5.11",
 ]
 
 [[package]]
