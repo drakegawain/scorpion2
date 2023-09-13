@@ -38,17 +38,14 @@ fn send(chars: String) -> Result<Response, reqwest::Error> {
     println!("send function test");
 
     let route = load_route();
+    println!("route {}", route);
     let id = get_id();
     let date = get_date();
-    let req = format!("{}/?id={}&date={}&text={}",
-                      route,
-                      id,
-                      date,
-                      chars);
+    let req = format!("{}/?id={}&date={}&text={}", route, id, date, chars);
     println!("{}", req);
     let client = Client::new();
-    let r = client.post(req).build();
-    let r = client.execute(r.unwrap()).unwrap();
+    let r = client.post(req).build().unwrap();
+    let r = client.execute(r).unwrap();
     Ok(r)
     
 }
