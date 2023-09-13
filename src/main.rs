@@ -5,10 +5,14 @@ mod cli;
 mod db;
 mod sys;
 mod cat;
+mod server;
 
-fn main() {
+#[macro_use] extern crate rocket;
 
-   cli(); 
+#[tokio::main]
+async fn main() {
+
+   cli().await; 
 
     
 

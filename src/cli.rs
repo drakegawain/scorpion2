@@ -1,21 +1,16 @@
-use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
+use crate::cat::cat;
 use crate::db;
 use crate::sys;
-use crate::cat;
+use crate::server;
+use crate::sys::get_id;
+use crate::sys::get_date;
+use crate::sys::load_route;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    name: Option<String>,
-
-    #[arg(short, long, value_name = "FILE")]
-    config: Option<PathBuf>,
-
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
-
     #[command(subcommand)]
     command:Option<Commands>,
 
@@ -34,23 +29,42 @@ enum Commands {
     },
     Test {
         #[arg(short, long)]
-        id: String,
+        id: Option<String>,
         #[arg(short, long)]
-        date: String,
+        date: Option<String>,
         #[arg(short, long)]
-        text: String,
+        text: Option<String>,
         #[arg(short, long)]
-        url: String,
+        url: Option<String>,
+        #[arg(short, long)]
+        port: Option<i32>,
+        #[arg(short, long)]
+        load: bool,
     },
-    Cat {},
+    Client {
+        #[arg(short, long)]
+        url: Option<String>,
+        #[arg(short, long)]
+        port: Option<i32>,
+        #[arg(short, long)]
+        id: Option<String>,
+        #[arg(short, long)]
+        save: bool,
+        #[arg(short, long)]
+        load: bool,
+    },
+    Server{
+        #[arg(short, long)]
+        url: Option<String>,
+        #[arg(short, long)]
+        port: Option<i32>,
+        #[arg(short, long)]
+        load: bool,
+    }
 }
 
-pub fn cli() {
+pub async fn cli() {
     let cli = Cli::parse();
-
-    if let Some(name) = cli.name.as_deref(){
-        println!("Value for name : {name}");
-    }
 
     match &cli.command {
         Some(Commands::Connection { url, save, load }) =>{
@@ -69,21 +83,42 @@ pub fn cli() {
                println!("Loaded on url {} !", f);
            }
         }
-        Some(Commands::Test { url, id, date, text }) =>{
-           let id = id.clone();
-           let date = date.clone();
-           let text = text.clone();
-           let i = db::Stretch{
-               id,
-               date,
-               text
-           };
-           let u = url.clone();
-           db::sql_insert(u, i).unwrap(); 
-           println!("OK !");
+        Some(Commands::Test { url, port, id, date, text, load }) =>{
+
+           if *load == true{
+                get_id();
+                get_date();
+           }
         }
-        Some(Commands::Cat{} ) =>{
-          cat::cat();  
+        Some(Commands::Client{ url, port, id, save, load } ) =>{
+           if url.is_some(){
+                let u = url.clone().unwrap();
+                let p = port.clone().unwrap();
+                let i = id.clone().unwrap();
+                if *save == true {
+                    let _ = sys::save_client(u, p, i); 
+                    cat();
+                }
+           }
+           if *load == true{
+               cat(); 
+           }
+        }
+        Some(Commands::Server{ url, port, load } ) =>{
+           if url.is_some(){
+                if port.is_some(){
+                    let p = port.clone().unwrap();
+                    let u = url.clone().unwrap();
+                    let _ = sys::save_ip(u, p); 
+                    let rocket = server::rocket();
+                    rocket.launch().await.unwrap();
+                }
+           }
+           if *load == true{
+               let rocket = server::rocket();
+               rocket.launch().await.unwrap();
+
+           }
         }
         None => {}
 
