@@ -85,7 +85,7 @@ pub fn load_route() -> String{
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let app_config: App = toml::from_str(&content).unwrap();
-    let route = format!("{}:{}", app_config.default.adress, app_config.default.port);
+    let route = format!("http://{}:{}", app_config.default.adress, app_config.default.port);
     return route; 
     
 }
