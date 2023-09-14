@@ -15,7 +15,6 @@ struct App {
 
 #[derive(Debug, Deserialize)]
 struct AppConfig {
-
     adress: String,
     port: u32,
     id: String,

