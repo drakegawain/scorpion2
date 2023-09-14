@@ -3,7 +3,7 @@ A better client-server klogger, purpose of learning rust
 
 ### Instalation
 
-`git clone https://github.com/drakegawain/scorpion2`
+`git clone https://github.com/drakegawain/scorpion2 ~/.scorpion2`
 
 #### Use
 
