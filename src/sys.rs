@@ -83,7 +83,7 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
 pub fn load() -> String {
     let mut home = dirs::home_dir().unwrap();
     home.push(".scorpion2");
-    home.push("App.toml");
+    home.push("url.txt");
     let mut file = File::open(home).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();

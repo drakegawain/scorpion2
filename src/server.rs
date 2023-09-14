@@ -5,6 +5,7 @@ use rocket::http::Status;
 use rocket::{self};
 use crate::sys; 
 use crate::db;
+use dirs;
 
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -35,9 +36,14 @@ fn index(id: String, date: String, text: String) -> Status{
 #[launch]
 pub fn rocket() -> rocket::Rocket<Build> {
 
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
+
+
     let figment = Figment::from(rocket::Config::default())
         .merge(Serialized::defaults(Config::default()))
-        .merge(Toml::file("App.toml").nested());
+        .merge(Toml::file(home).nested());
         
 
     rocket::custom(figment).mount("/", routes![index])
