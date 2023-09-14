@@ -4,6 +4,7 @@ extern crate serde_derive;
 
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
+use dirs;
 use serde::Deserialize;
 use chrono::{Local, Datelike};
 
@@ -20,17 +21,24 @@ struct AppConfig {
     id: String,
 }
 
+
 pub fn save(url: String) -> std::io::Result<()> {
-    let mut file = File::create("~/.scorpion2/url.txt")?;
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("url.txt");
+    let mut file = File::create(home)?;
     file.write_all(url.as_bytes())?;
     Ok(())
 }
 
 pub fn save_ip(url: String, port: i32) -> std::io::Result<()> {
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
     let data = format!("[default] \nadress = \"{}\" \nport = {}", url, port);
     let fcheck = OpenOptions::new()
         .write(true)
-        .open("~/.scorpion2/App.toml");
+        .open(home.clone());
 
     match fcheck {
         Ok(mut f) => {
@@ -38,7 +46,7 @@ pub fn save_ip(url: String, port: i32) -> std::io::Result<()> {
             f.write_all(data.as_bytes())?;
         },
         Err(_) => {
-            let mut f = File::create("~/.scorpion2/App.toml")?;
+            let mut f = File::create(home)?;
             f.write_all(data.as_bytes())?;
         },
     };
@@ -48,10 +56,13 @@ pub fn save_ip(url: String, port: i32) -> std::io::Result<()> {
 
 
 pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
     let data = format!("[default] \nadress = \"{}\" \nport = {} \nid = {}", url, port, id);
     let fcheck = OpenOptions::new()
         .write(true)
-        .open("~/.scorpion2/App.toml");
+        .open(home.clone());
 
     match fcheck {
         Ok(mut f) => {
@@ -59,7 +70,7 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
             f.write_all(data.as_bytes())?;
         },
         Err(_) => {
-            let mut f = File::create("~/.scorpion2/App.toml")?;
+            let mut f = File::create(home)?;
             f.write_all(data.as_bytes())?;
         },
     };
@@ -69,9 +80,11 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
 
 
 
-
 pub fn load() -> String {
-    let mut file = File::open("~/.scorpion2/url.txt").unwrap();
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
+    let mut file = File::open(home).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     return content;
@@ -79,8 +92,11 @@ pub fn load() -> String {
 
 
 pub fn load_route() -> String{
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
 
-    let mut file = File::open("~/.scorpion2/App.toml").unwrap();
+    let mut file = File::open(home).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let app_config: App = toml::from_str(&content).unwrap();
@@ -90,8 +106,11 @@ pub fn load_route() -> String{
 }
 
 pub fn get_id() -> String{
+    let mut home = dirs::home_dir().unwrap();
+    home.push(".scorpion2");
+    home.push("App.toml");
 
-    let mut file = File::open("~/.scorpion2/App.toml").unwrap();
+    let mut file = File::open(home).unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let app_config: App = toml::from_str(&content).unwrap();
@@ -100,7 +119,7 @@ pub fn get_id() -> String{
 
 pub fn get_date() -> String{
 
-    let current_date = Local::today();
+    let current_date = Local::now();
     let date = format!("{:04}-{:02}-{:02}", current_date.year(), current_date.month(), current_date.day());
     return date;
 }
