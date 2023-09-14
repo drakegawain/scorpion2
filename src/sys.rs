@@ -30,7 +30,7 @@ pub fn save_ip(url: String, port: i32) -> std::io::Result<()> {
     let data = format!("[default] \nadress = \"{}\" \nport = {}", url, port);
     let fcheck = OpenOptions::new()
         .write(true)
-        .open("App.toml");
+        .open("~/.scorpion2/App.toml");
 
     match fcheck {
         Ok(mut f) => {
@@ -38,7 +38,7 @@ pub fn save_ip(url: String, port: i32) -> std::io::Result<()> {
             f.write_all(data.as_bytes())?;
         },
         Err(_) => {
-            let mut f = File::create("App.toml")?;
+            let mut f = File::create("~/.scorpion2/App.toml")?;
             f.write_all(data.as_bytes())?;
         },
     };
@@ -51,7 +51,7 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
     let data = format!("[default] \nadress = \"{}\" \nport = {} \nid = {}", url, port, id);
     let fcheck = OpenOptions::new()
         .write(true)
-        .open("App.toml");
+        .open("~/.scorpion2/App.toml");
 
     match fcheck {
         Ok(mut f) => {
@@ -59,7 +59,7 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
             f.write_all(data.as_bytes())?;
         },
         Err(_) => {
-            let mut f = File::create("App.toml")?;
+            let mut f = File::create("~/.scorpion2/App.toml")?;
             f.write_all(data.as_bytes())?;
         },
     };
@@ -80,7 +80,7 @@ pub fn load() -> String {
 
 pub fn load_route() -> String{
 
-    let mut file = File::open("App.toml").unwrap();
+    let mut file = File::open("~/.scorpion2/App.toml").unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let app_config: App = toml::from_str(&content).unwrap();
@@ -91,7 +91,7 @@ pub fn load_route() -> String{
 
 pub fn get_id() -> String{
 
-    let mut file = File::open("App.toml").unwrap();
+    let mut file = File::open("~/.scorpion2/App.toml").unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     let app_config: App = toml::from_str(&content).unwrap();
