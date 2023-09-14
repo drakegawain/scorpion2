@@ -32,6 +32,9 @@ to ensure db can catch the keys
 Add this lines to bottom of .bashrc
 
 `export SCORPION2_INSTALL = "$HOME/.scorpion2/target/release"`
+
+And
+
 `export PATH = $SCORPION2_INSTALL:$PATH`
 
 ### Build
