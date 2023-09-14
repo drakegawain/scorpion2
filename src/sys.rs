@@ -21,7 +21,7 @@ struct AppConfig {
 }
 
 pub fn save(url: String) -> std::io::Result<()> {
-    let mut file = File::create("url.txt")?;
+    let mut file = File::create("~/.scorpion2/url.txt")?;
     file.write_all(url.as_bytes())?;
     Ok(())
 }
@@ -71,7 +71,7 @@ pub fn save_client(url: String, port: i32, id: String) -> std::io::Result<()> {
 
 
 pub fn load() -> String {
-    let mut file = File::open("url.txt").unwrap();
+    let mut file = File::open("~/.scorpion2/url.txt").unwrap();
     let mut content = String::new();
     file.read_to_string(&mut content).unwrap();
     return content;
